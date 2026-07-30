@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Auditline — SEO & Technical Site Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◐</span>
+    <span class="brand-name">Auditline</span>
+    <span class="version-tag">v1.2.0</span>
+  </div>
+  <span class="tagline">technical &amp; SEO diagnostics for client sites</span>
+</header>
+
+<main class="scan-shell">
+  <section class="scan-input-panel">
+    <h1>Scan a page. Ship it clean.</h1>
+    <p class="sub">Enter a URL to run an on-page, technical, content, and link audit — the same checks we run before any landing page goes live. Every finding below states exactly what was inspected, the raw value found, and why it affects rankings or users.</p>
+
+    <form id="scan-form" class="scan-bar">
+      <span class="scan-bar-icon">→</span>
+      <input id="url-input" type="text" placeholder="e.g. https://client-site.com" autocomplete="off" required />
+      <button type="submit" id="scan-btn">Run Audit</button>
+    </form>
+
+    <div class="crawl-controls">
+      <label>
+        <span>Keyword</span>
+        <input id="target-keyword-input" type="text" placeholder="local SEO agency" />
+      </label>
+      <label>
+        <span>Pages</span>
+        <input id="max-pages-input" type="number" min="1" max="10" value="1" />
+      </label>
+      <label>
+        <span>Depth</span>
+        <input id="max-depth-input" type="number" min="1" max="3" value="1" />
+      </label>
+    </div>
+
+    <details class="gsc-controls">
+      <summary>Search Console</summary>
+      <div class="gsc-grid">
+        <input id="gsc-property-input" type="text" placeholder="Property URL, e.g. https://example.com/ or sc-domain:example.com" />
+        <input id="gsc-token-input" type="password" placeholder="OAuth access token with webmasters.readonly scope" autocomplete="off" />
+        <input id="gsc-start-input" type="date" />
+        <input id="gsc-end-input" type="date" />
+      </div>
+    </details>
+
+    <div id="scan-log" class="scan-log" hidden></div>
+    <div id="scan-status" class="scan-status" hidden></div>
+  </section>
+
+  <section id="report" class="report" hidden>
+
+    <div class="report-header">
+      <div class="report-url">
+        <span class="label">Target</span>
+        <span id="report-url-text" class="value"></span>
+      </div>
+      <div class="report-timestamp">
+        <span class="label">Scanned</span>
+        <span id="report-time" class="value"></span>
+      </div>
+      <button id="download-pdf-btn" class="pdf-btn">↓ Download PDF</button>
+    </div>
+
+    <div class="scan-meta" id="scan-meta"></div>
+
+    <div class="score-row">
+      <div class="gauge-wrap">
+        <svg id="gauge" viewBox="0 0 240 150" class="gauge-svg">
+          <path d="M 20 130 A 100 100 0 0 1 220 130" class="gauge-track" />
+          <path id="gauge-fill" d="M 20 130 A 100 100 0 0 1 220 130" class="gauge-fill" />
+          <g id="gauge-ticks"></g>
+          <line id="gauge-needle" x1="120" y1="130" x2="120" y2="45" class="gauge-needle" />
+          <circle cx="120" cy="130" r="7" class="gauge-hub" />
+        </svg>
+        <div class="gauge-readout">
+          <span id="score-number">--</span>
+          <span id="score-grade" class="grade-badge">--</span>
+        </div>
+      </div>
+
+      <div class="metrics-grid" id="metrics-grid"></div>
+    </div>
+
+    <div class="categories" id="categories"></div>
+
+    <div class="intelligence-panel" id="intelligence-panel" hidden>
+      <h2>Keyword Intelligence</h2>
+      <p class="section-explainer">Checks whether the target keyword appears in the title, H1, first paragraph, and natural page copy, then optionally connects Search Console performance.</p>
+      <div class="intelligence-grid" id="intelligence-grid"></div>
+      <div class="gsc-table-wrap" id="gsc-table-wrap" hidden>
+        <h3>Search Console Performance</h3>
+        <table class="gsc-table">
+          <thead>
+            <tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
+          </thead>
+          <tbody id="gsc-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="security-panel" id="security-panel" hidden>
+      <h2>Security Basics</h2>
+      <p class="section-explainer">Checks missing security headers, exposed sensitive files, mixed-content risks, and known vulnerable JavaScript libraries.</p>
+      <div class="security-grid" id="security-grid"></div>
+    </div>
+
+    <div class="local-trust-panel" id="local-trust-panel" hidden>
+      <h2>Local Trust &amp; NAP</h2>
+      <p id="local-trust-explanation" class="section-explainer"></p>
+      <div class="local-trust-grid" id="local-trust-grid"></div>
+    </div>
+
+    <div class="simulator-panel" id="simulator-panel" hidden>
+      <h2>Fix These, Get This Score</h2>
+      <p id="simulator-explanation" class="section-explainer"></p>
+      <div class="simulator-grid" id="simulator-grid"></div>
+    </div>
+
+    <div class="action-plan-panel" id="action-plan-panel" hidden>
+      <h2>Effort vs Impact Action Plan</h2>
+      <p id="action-plan-explanation" class="section-explainer"></p>
+      <div class="plan-columns">
+        <div>
+          <h3>Quick Wins</h3>
+          <ul class="plan-list" id="quick-wins-list"></ul>
+        </div>
+        <div>
+          <h3>Bigger Projects</h3>
+          <ul class="plan-list" id="bigger-projects-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-panel" id="ai-panel">
+      <div class="ai-panel-head">
+        <h2>AI Client Strategist</h2>
+        <button id="generate-ai-btn" type="button">Generate AI Analysis</button>
+      </div>
+      <div class="ai-controls">
+        <input id="ai-key-input" type="password" placeholder="AI API key" autocomplete="off" />
+        <input id="ai-model-input" type="text" placeholder="Model, e.g. gpt-4.1-mini, grok-4.3, llama-3.1-70b-versatile" />
+        <input id="custom-api-base-url-input" type="text" placeholder="Optional custom base URL, e.g. https://api.provider.com/v1" />
+        <input id="ai-audience-input" type="text" placeholder="Target audience, e.g. local homeowners, SaaS buyers" />
+        <input id="competitor-urls-input" type="text" placeholder="Competitor URLs, comma-separated (up to 3)" />
+      </div>
+      <div id="ai-status" class="ai-status" hidden></div>
+      <div id="ai-output" class="ai-output" hidden></div>
+      <div class="ai-chat">
+        <input id="ai-question-input" type="text" placeholder="Ask about this report, e.g. What should the client fix first?" />
+        <button id="ask-ai-btn" type="button">Ask AI</button>
+      </div>
+      <div id="ai-answer" class="ai-answer" hidden></div>
+    </div>
+
+    <div class="site-panel" id="site-panel" hidden>
+      <div class="site-panel-head">
+        <h2>Site Health</h2>
+        <div class="site-score">
+          <span id="site-score-number">--</span>
+          <span id="site-score-grade">--</span>
+        </div>
+      </div>
+      <div class="site-summary" id="site-summary"></div>
+      <div class="site-grid" id="site-grid"></div>
+      <h3>Sitewide Findings</h3>
+      <ul class="site-issues" id="site-issues"></ul>
+    </div>
+
+    <div class="screenshot-panel" id="screenshot-panel" hidden>
+      <h2>Rendered Page</h2>
+      <img id="screenshot-img" class="screenshot-img" alt="" />
+    </div>
+
+    <div class="breakdown-panel">
+      <h2>How this score was calculated</h2>
+      <p class="breakdown-sub" id="breakdown-sub"></p>
+      <table class="ledger-table">
+        <thead>
+          <tr><th>Check</th><th>Category</th><th>Result</th><th>Points</th><th>Running total</th></tr>
+        </thead>
+        <tbody id="ledger-body"></tbody>
+      </table>
+    </div>
+
+    <div class="palette-panel" id="palette-panel" hidden>
+      <h2>Color &amp; Design Suggestions</h2>
+      <p class="palette-sub" id="palette-sub"></p>
+      <div class="palette-swatches" id="palette-swatches"></div>
+    </div>
+
+    <div class="issues-panel">
+      <div class="issues-panel-head">
+        <h2>Findings</h2>
+        <div class="filter-chips" id="filter-chips">
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="critical">Critical</button>
+          <button class="chip" data-filter="warning">Warning</button>
+          <button class="chip" data-filter="good">Passed</button>
+        </div>
+      </div>
+      <ul id="issues-list" class="issues-list"></ul>
+    </div>
+
+    <div class="methodology">
+      <h2>Methodology</h2>
+      <p class="methodology-sub">What this engine inspects, and why each category is weighted the way it is.</p>
+      <div class="methodology-grid">
+        <div class="method-card">
+          <span class="method-tag">01 · ON-PAGE</span>
+          <p>Parses the rendered DOM for title tag, meta description, heading structure (H1-H6), and image alt attributes — the signals a crawler reads to determine topical relevance.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">02 · TECHNICAL</span>
+          <p>Checks HTTPS, mobile viewport config, canonical tags, robots.txt, sitemap.xml, structured data (JSON-LD), and raw server response time — the infrastructure layer search engines evaluate before content is even considered.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">03 · CONTENT</span>
+          <p>Computes visible word count and a practical readability score from sentence length, word length, long-word density, paragraph length, and Flesch Reading Ease.</p>
+        </div>
+        <div class="method-card">
+          <span class="method-tag">04 · LINKS</span>
+          <p>Extracts same-origin links from the DOM and issues HEAD requests against a sample to detect broken (4xx/5xx) internal links.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="history-section" class="history" hidden>
+    <h2>Recent scans</h2>
+    <ul id="history-list" class="history-list"></ul>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
