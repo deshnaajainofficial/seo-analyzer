@@ -18,6 +18,9 @@ checks passed or failed, where on the page each issue lives, why it matters, how
 and how many points fixing it would recover. That turns an audit from "trust me, it's a 72"
 into a report a client can actually act on.
 
+### Homepage
+<img src="seo-analyzer_images/homepage.png" width="900" alt="Homepage">
+
 ## What It Does
 
 1. **Crawls** a site across multiple pages (via Playwright + headless Chromium, with
@@ -54,6 +57,12 @@ time, and Web Vitals-style measurements via Playwright.
 
 ### Link Health
 Samples internal links and flags broken ones.
+
+### Audit Dashboard
+<img src="seo-analyzer_images/1.png" width="900" alt="Audit Dashboard">
+
+### Results Overview
+<img src="seo-analyzer_images/2.png" width="900" alt="Results Overview">
 
 ### Design & Engagement Audit
 - Reads colors and fonts from inline styles, `<style>` blocks, and up to 6 linked external
@@ -130,6 +139,14 @@ headless browser required for the export step itself.
 - **Optional integrations**: Google Search Console, OpenAI-compatible LLM APIs (OpenAI,
   xAI/Grok), OSV vulnerability data
 - **Storage**: In-memory scan history (swap in MongoDB/PostgreSQL for production use)
+
+
+### Detailed Findings
+<img src="seo-analyzer_images/3.png" width="900" alt="Detailed Findings">
+
+### PDF Report
+<img src="seo-analyzer_images/PDF.png" width="900" alt="PDF Report">
+
 
 ## Project Structure
 
